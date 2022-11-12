@@ -5,6 +5,9 @@ public class OpenAIReq {
 	String prompt;
 	Integer n;
 	String size;
+	
+	
+	
 	public String getPrompt() {
 		return prompt;
 	}
@@ -23,6 +26,7 @@ public class OpenAIReq {
 	public void setSize(String size) {
 		this.size = size;
 	}
+	
 	
 	
 

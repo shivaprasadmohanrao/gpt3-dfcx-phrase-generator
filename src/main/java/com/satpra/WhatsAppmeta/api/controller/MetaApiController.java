@@ -21,6 +21,8 @@ import com.satpra.WhatsAppmeta.api.dao.Messages;
 import com.satpra.WhatsAppmeta.api.dao.MessagesRes;
 import com.satpra.WhatsAppmeta.api.dao.OpenAIReq;
 import com.satpra.WhatsAppmeta.api.dao.OpenAIRes;
+import com.satpra.WhatsAppmeta.api.dao.OpenAITextCompletion;
+import com.satpra.WhatsAppmeta.api.dao.OpenAITextCompletionReq;
 import com.satpra.WhatsAppmeta.api.dao.Text;
 import com.satpra.WhatsAppmeta.api.dao.WaMsgResponse;
 import com.satpra.WhatsAppmeta.api.messages.dao.MessageRequest;
@@ -34,6 +36,10 @@ public class MetaApiController {
 	List<String> hiList = new ArrayList<>();
 	List<String> endList = new ArrayList<>();
 	static String name = "";
+	
+	static{
+		wamidStack.add(0, "top");
+	}
 	
 	{
 		wamidStack.add(0, wamid);
@@ -73,13 +79,16 @@ public class MetaApiController {
 	 * control this. 
 	 * 4. Products --> whatsapp -> getting started --> here you will get temporary OAuth access token with 23 hrs expiry date. this is used to use api of mets to send message to dedicated whatsapp number.
 	 * this is used in method sendWhatsappMesg().
+	 * to get access token use this api https://graph.facebook.com/oauth/access_token?client_id=7407028842703147&client_secret=49e17a80a1edec1465d5eaf3d3099a12&grant_type=client_credentials
+	 * and 
+	 * to reset app_secret use this url : https://developers.facebook.com/apps/7407028842703147/settings/advanced/?business_id=401121548577887
 	 * 5. now in this app, we are generating image from text using OpenAI api's. which is implemented in textToImageURL().
 	 * 6. OpenAI signUp gives 90 days $18 credit. And API key needs to be generated and used along with api call.
 	 * */
 	
 //	private final static String TOKEN = "SOME_TOKEN";
 	
-	//This mapping helps for meta servers to authenticate your app, kind of verification for the webhook setup
+	//This mapping helps for meta servers to authenticate your app, kind of verification for the weebhook setup
 	@GetMapping(path="/rcvmsg")
 	public Integer findUser(@RequestParam(name = "hub.challenge") Integer metaBody, @RequestParam(name = "hub.verify_token") String token) {
 		System.out.println("received token from " + metaBody);
@@ -101,17 +110,23 @@ public class MetaApiController {
 		
 		String imgText = "";
 		
-		String thankYouText = "_please note this is an computer generated image_" + "\n" 
+		String thankYouText = "_please note this is an computer 🖥️ generated image_" + "\n" 
 				
 				+ "\n" +  "Hope you liked the above *Image*. "
-				+ "\n" +  "Thanks for using *AI Artist " + name + "*! GoodBye till you comeback 🙏🏻";
+				+ "\n" +  "✨Thanks for using *AI Artist - " + name + "*! ✨  "
+				+ "\n" + "GoodBye till you comeback 🙏🏻";
 		
 		String endMsg = "\n" + "To start again, please type *'Hi'* to start a new conversation"
 				+ "\n" +  "_credits to *OpenAI API* and *Meta-Whatsapp* cloud API_";
 		String byeMsg = "Thanks for using *AI Artist " + name + "*! GoodBye till you comeback 🙏🏻";
 		String body="";
 		String tti;
-		
+		String ttc;
+		String thankYouComp = "_please note this is an computer 🖥️ generated text phrase" + "\n" 
+				
+				+ "\n" +  "Hope you liked the above *Phrase*. "
+				+ "\n" +  "✨Thanks for using *AI Artist - " + name + "*! ✨  "
+				+ "\n" + "GoodBye till you comeback 🙏🏻";
 		
 		
 		if(getMessages != null) {
@@ -125,7 +140,7 @@ public class MetaApiController {
 				sendWhatsappMesg(messages, "text", to, null, byeMsg);
 				sendWhatsappMesg(messages, "text", to, null, endMsg);
 			}
-			if(hiList.contains(getMessages[0].getText().getBody().toLowerCase())) {
+			if(hiList.contains(getMessages[0].getText().getBody().toLowerCase()) && wamidStack.get(0).equals("top")) {
 				sendWhatsappMesg(messages, "text", to, null, welcomeText);
 				wamidStack.add(0, "name");
 				
@@ -138,8 +153,8 @@ public class MetaApiController {
 					name = getMessages[0].getText().getBody();
 					imgText = "Thank you *" + name + "*! ✅ "
 							+ "\n" +  "I can help you generate an Image using *AI* based on the text you provide. "
-							+ "\n" + "Please be *cautious* about your text/words. Now please go on and type a "
-							+ "text/word or a meaningful short sentence which I will use to generate an Image.";
+							+ "\n" + "Please be *cautious* about your text/words. Now please go ahead and ⌨️ type a "
+							+ "text/word or a meaningful short sentence ⌨️ which I will use to generate an Image.";
 					sendWhatsappMesg(messages, "text", to, null, imgText);
 					wamidStack.add(0, "image");
 				}
@@ -148,15 +163,34 @@ public class MetaApiController {
 				if(getMessages[0].getText().getBody().equals(body)) {
 					System.out.println("same 2");
 				}else {
-					sendWhatsappMesg(messages, "text", to, null, "🆗. Generating now....." + "\n");
-					Thread.sleep(1000);
+					sendWhatsappMesg(messages, "text", to, null, "🧬 Generating now..... 🧬" + "\n");
+					//Thread.sleep(1000);
 					tti = getMessages[0].getText().getBody();
 					responseImageURL = textToImageURL(tti);
 					wamid = sendWhatsappMesg(messages, "image", to, responseImageURL, null);
+					
 					Thread.sleep(3000);
 					wamid = sendWhatsappMesg(messages, "text", to, null, thankYouText);
+					String com = "Alright! Before you go how about helping you completing a tag line. "
+							+ "Please go ahead and ⌨️ type a tag line and I will help completing it or modifying it ⌨️";
+					Thread.sleep(100);
+					sendWhatsappMesg(messages, "text", to, null, com);
+					wamidStack.add(0, "completion");
+				}
+			}
+			else if((getMessages[0].getText().getBody() != null) && wamidStack.get(0).equals("completion")) {
+				if(getMessages[0].getText().getBody().equals(body)) {
+					System.out.println("same 3");
+				}else {
+					sendWhatsappMesg(messages, "text", to, null, "📝 Completing it.... 📝" + "\n");
+					//Thread.sleep(1000);
+					ttc = getMessages[0].getText().getBody();
+					sendWhatsappMesg(messages, "text", to, null, "💎" + textToTag(ttc).toUpperCase() +"💎");
+					Thread.sleep(100);
+					wamid = sendWhatsappMesg(messages, "text", to, null, thankYouComp);
+					Thread.sleep(100);
 					wamid = sendWhatsappMesg(messages, "text", to, null, endMsg);
-					wamidStack.add(0, wamid);
+					wamidStack.add(0, "end");
 				}
 			}
 			else{
@@ -179,7 +213,8 @@ public class MetaApiController {
 		list.add(MediaType.ALL);
 		headers.setAccept(list);
 		//set this value every 23 hours, copy from whatsapp configuration portal
-		headers.setBearerAuth("EABpQp0sCqSsBAD7rIjhqymjOyMNAsCU63PKzYHa2HHzMr82E3jz32ZCv6fIJs3pYVZBMyDdF5SMgVaQZCgM0DmbIZBofSndKTfJiNYwZAYWt4ZB1FLRRGF1KV3FvkHEmndb8YtMjWhZBt704pWRzRarhZBGrpZBwk1quoMDW7qcR05wN7Il6135Xhyp0pOOgcQfXydPFQ8qZBqyDTXs6Wf13s2");
+		//get this from https://developers.facebook.com/apps/7407028842703147/whatsapp-business/wa-dev-console/?business_id=401121548577887
+		headers.setBearerAuth("EABpQp0sCqSsBADUBAjWZA13Dkg0d0P5Dkbr65Woffx5PukkMGAuKcqKrZCOLOTQYi7HElZCM5hX38NmzTp1Ml2ux6B7GrJWGFSAFCKIjlzR8HGkbGNKKvU1HM2F15ZCklZBOVu8qYrMegNWZAIztzxyslvt522oDedIDZA6iPEXPIrx5vbGpsvIajvZBqvyTnsk1dH7akFfXtWJg55LjgdFi");
 		
 		MessageRequest mRequest = new MessageRequest();
 		mRequest.setMessaging_product("whatsapp");
@@ -215,7 +250,7 @@ public class MetaApiController {
 		return response.getBody().getMessages()[0].getId();
 		
 	}
-
+	//OpenAI text to Image API
 	private String textToImageURL(String tti) {
 		String url = "https://api.openai.com/v1/images/generations";
 
@@ -225,7 +260,8 @@ public class MetaApiController {
 
 		list.add(MediaType.ALL);
 		headers.setAccept(list);
-		headers.setBearerAuth("");//provide OpenAI api key here
+		//get this from https://beta.openai.com/account/api-keys 90days validaity for free account
+		headers.setBearerAuth("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");
 		
 		OpenAIReq mRequest = new OpenAIReq();
 		mRequest.setN(1);
@@ -238,5 +274,34 @@ public class MetaApiController {
 		System.out.println("URL " + response.getBody().getData()[0].getUrl());
 		return response.getBody().getData()[0].getUrl();
 	}
+	
+	//OpenAI tag line generator/completions api API
+		private String textToTag(String ttc) {
+			String url = "https://api.openai.com/v1/completions";
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			List<MediaType> list = new ArrayList<MediaType>();
+
+			list.add(MediaType.ALL);
+			headers.setAccept(list);
+			//get this from https://beta.openai.com/account/api-keys 90days validaity for free account
+			headers.setBearerAuth("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");
+			
+			OpenAITextCompletionReq mRequest = new OpenAITextCompletionReq();
+			mRequest.setModel("text-davinci-001");
+			mRequest.setPrompt(ttc);
+			mRequest.setTemperature(0.32);
+			mRequest.setMax_tokens(150);
+			mRequest.setTop_p(1);
+			mRequest.setFrequency_penalty(0);
+			mRequest.setPresence_penalty(0);
+			
+			HttpEntity<OpenAITextCompletionReq> waRequest = new HttpEntity<OpenAITextCompletionReq>(mRequest, headers);
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<OpenAITextCompletion> response = restTemplate.exchange(url, HttpMethod.POST, waRequest, OpenAITextCompletion.class);
+			System.out.println("URL " + response.getBody().getChoices()[0].getText());
+			return response.getBody().getChoices()[0].getText();
+		}
 
 }
