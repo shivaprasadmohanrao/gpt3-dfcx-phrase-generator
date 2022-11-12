@@ -214,7 +214,7 @@ public class MetaApiController {
 		headers.setAccept(list);
 		//set this value every 23 hours, copy from whatsapp configuration portal
 		//get this from https://developers.facebook.com/apps/7407028842703147/whatsapp-business/wa-dev-console/?business_id=401121548577887
-		headers.setBearerAuth("EABpQp0sCqSsBADUBAjWZA13Dkg0d0P5Dkbr65Woffx5PukkMGAuKcqKrZCOLOTQYi7HElZCM5hX38NmzTp1Ml2ux6B7GrJWGFSAFCKIjlzR8HGkbGNKKvU1HM2F15ZCklZBOVu8qYrMegNWZAIztzxyslvt522oDedIDZA6iPEXPIrx5vbGpsvIajvZBqvyTnsk1dH7akFfXtWJg55LjgdFi");
+		headers.setBearerAuth("");
 		
 		MessageRequest mRequest = new MessageRequest();
 		mRequest.setMessaging_product("whatsapp");
@@ -261,7 +261,7 @@ public class MetaApiController {
 		list.add(MediaType.ALL);
 		headers.setAccept(list);
 		//get this from https://beta.openai.com/account/api-keys 90days validaity for free account
-		headers.setBearerAuth("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");
+		headers.setBearerAuth("");
 		
 		OpenAIReq mRequest = new OpenAIReq();
 		mRequest.setN(1);
@@ -286,7 +286,7 @@ public class MetaApiController {
 			list.add(MediaType.ALL);
 			headers.setAccept(list);
 			//get this from https://beta.openai.com/account/api-keys 90days validaity for free account
-			headers.setBearerAuth("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");
+			headers.setBearerAuth("");
 			
 			OpenAITextCompletionReq mRequest = new OpenAITextCompletionReq();
 			mRequest.setModel("text-davinci-001");
