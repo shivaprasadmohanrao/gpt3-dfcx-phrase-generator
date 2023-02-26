@@ -1,4 +1,4 @@
-package com.satpra.WhatsAppmeta.api.dao;
+package com.technocouple.promptGenerator.api.dao;
 
 public class ContactRes {
 	

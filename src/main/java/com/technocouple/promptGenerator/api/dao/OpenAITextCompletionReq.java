@@ -1,4 +1,6 @@
-package com.satpra.WhatsAppmeta.api.dao;
+package com.technocouple.promptGenerator.api.dao;
+
+import java.util.List;
 
 public class OpenAITextCompletionReq {
 	
@@ -9,6 +11,15 @@ public class OpenAITextCompletionReq {
 	int frequency_penalty;
 	int presence_penalty;
 	String prompt;
+	List<String> stop;
+	
+	
+	public List<String> getStop() {
+		return stop;
+	}
+	public void setStop(List<String> stop) {
+		this.stop = stop;
+	}
 	public String getModel() {
 		return model;
 	}

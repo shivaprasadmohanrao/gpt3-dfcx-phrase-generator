@@ -1,6 +1,6 @@
-package com.satpra.WhatsAppmeta.api.dao;
+package com.technocouple.promptGenerator.api.dao;
 
-public class WaMsgResponse {
+public class DFCXApiResponse {
 	
 	String messaging_product;
 	ContactRes[] contacts; 

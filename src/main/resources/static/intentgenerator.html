@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dialogflow CX Intent Phrases Generator</title>
+    <script>
+      function submitForm() {
+        // Get user input value
+        let userInput = document.getElementById("userInput").value;
+        
+        document.getElementById("generatebtn").innerText = "Generating...";
+
+        // Submit user input to the backend service : Change it to the BaseURL of your Springboot application
+        fetch("http://2332-171-76-87-134.ngrok.io/phrases", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ input: userInput })
+        })
+          .then(response => response.json())
+          .then(responseData => {
+            // Clear previous response
+            document.getElementById("response").innerHTML = "";
+
+            //console.log("responseData = " + responseData);
+            // Display response in bullet points
+            responseData.forEach(item => {
+              let li = document.createElement("li");
+              //console.log(item);
+              item = item.trim();
+              if(item != "" && item != undefined && item.length > 0 && item != "\n"){
+            	  li.innerHTML = item;
+              }
+              document.getElementById("response").appendChild(li);
+            });
+            
+            var x = document.getElementById("respDiv");
+            if (x.style.display === "none") {
+              x.style.display = "block";
+            } else {
+              x.style.display = "none";
+            }
+            
+            var x = document.getElementById("trainDFCX");
+            if (x.style.display === "none") {
+              x.style.display = "block";
+            } else {
+              x.style.display = "none";
+            }
+            document.getElementById("generatebtn").innerText = "Generate Phrases Again";
+            
+          });
+      }
+      
+      function trainAgent() {
+          // Get user input value
+          let userInput = document.getElementById("userInput").value;
+          document.getElementById("trainbtn").innerText = "Training...";
+
+          // Submit user input to the backend service : Change it to the BaseURL of your Springboot application
+          fetch("http://2332-171-76-87-134.ngrok.io/trainDfcx", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ input: userInput })
+          })
+            .then(response => {
+              // Clear previous response
+             /*  document.getElementById("trainDFCXStatusSuccess").innerHTML = "";
+              document.getElementById("trainDFCXStatusError").innerHTML = ""; */
+
+              console.log("response trainAgent = " + response.status);
+              if(response.status == 200){
+            	  var x1 = document.getElementById("trainDFCXStatusSuccess");
+            	  x1.style.display = "block";
+                  /* if (x1.style.display === "none") {
+                    x1.style.display = "block";
+                  } else {
+                    x1.style.display = "none";
+                  } */
+              } else {
+            	  var x2 = document.getElementById("trainDFCXStatusError");
+                  if (x2.style.display === "none") {
+                    x2.style.display = "block";
+                  } else {
+                    x2.style.display = "none";
+                  }
+              }
+              document.getElementById("trainbtn").innerText = "Train DFCX Agent";
+            });
+        }
+      
+    </script>
+    <style type="text/css">
+    input[type='text']:focus{
+ 		border-radius:0px;
+ 		outline:none;
+ 		font-family: Arial, Helvetica, sans-serif;
+	}​
+	
+.buttonload {
+  background-color: #04AA6D; /* Green background */
+  border: none; /* Remove borders */
+  color: white; /* White text */
+  padding: 12px 24px; /* Some padding */
+  font-size: 16px; /* Set a font-size */
+}
+
+/* Add a right margin to each icon */
+.fa {
+  margin-left: -12px;
+  margin-right: 8px;
+}
+
+    </style>
+  </head>
+  
+  <body>
+    <h2 style="font-family: Arial, Helvetica, sans-serif;">Google Dialogflow CX Intent & Training Phrase Generator</h2>
+    <div>
+      <label style="font-family: Arial, Helvetica, sans-serif;" for="userInput">Intent Name:</label>
+      <input type="text" id="userInput" autofocus="true" style="width: 700px; padding: 5px 7px; border: solid;;color: black;background-color: white; text-align: left"/>
+      <button id="generatebtn" 
+      class="" style="cursor:pointer; font-family: Arial, Helvetica, sans-serif;background-color: #008CBA;border: none;color: white;padding: 5px 15px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;" 
+      onclick="submitForm()">Generate Phrases</button>
+      
+    </div>
+    
+    
+    <div id="respDiv" style="display: none">
+	    <h3 style="font-family: Arial, Helvetica, sans-serif;" id="responseHeading">Generated Training Phrases for the Intent: FORGOT PASSWORD</h3>
+	    <ul style="font-family: Arial, Helvetica, sans-serif;" id="response"></ul>
+    </div>
+    
+    <div id="trainDFCX" style="display: none">
+      <label style="font-family: Arial, Helvetica, sans-serif;" for="uploadtodfcx">Like these phrases? Upload to your Google Dialogflow CX Agent using "Train DFCX Agent" Button</label>
+      <!-- <button style="font-family: Arial, Helvetica, sans-serif;" onclick="trainAgent()">Train Agent</button> -->
+      
+      <button id="trainbtn" 
+      style="cursor:pointer; font-family: Arial, Helvetica, sans-serif;background-color: #008CBA;border: none;color: white;padding: 5px 15px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;" 
+      onclick="trainAgent()">Train DFCX Agent</button>
+    </div>
+    <br>
+    <div id="trainDFCXStatusSuccess" style="display: none" align="center">
+    	<label style="font-family: Arial, Helvetica, sans-serif;color: #4CAF50; font-weight: bolder; font-size: xx-large;" for="userInput1">Training phrases were uploaded to DFCX successfully!</label>
+      	<input type="text" id="userInput1" hidden="true"/>
+    </div>
+    
+    <div id="trainDFCXStatusError" style="display: none">
+    	<label style="font-family: Arial, Helvetica, sans-serif;color: #f44336" for="userInput2">Error Occurred while uploading training phrases!</label>
+      	<input type="text" id="userInput2" hidden="true"/>
+    </div>
+    
+  </body>
+</html>

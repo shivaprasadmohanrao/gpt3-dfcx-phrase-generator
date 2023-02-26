@@ -1,0 +1,23 @@
+{
+  "displayName": "TravelDispName1",
+  "trainingPhrases": [
+    {
+      "parts": [
+        {
+          "parameterId": "",
+          "text": "I need to plan my trip"
+        }
+      ],
+      "repeatCount": 1
+    },
+    {
+      "parts": [
+        {
+          "parameterId": "",
+          "text": "Help me to build itinerary for the upcoming trip"
+        }
+      ],
+      "repeatCount": 1
+    }
+  ]
+}
